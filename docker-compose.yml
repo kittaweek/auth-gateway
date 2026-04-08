@@ -5,6 +5,8 @@ services:
     command: ["dex", "serve", "/etc/dex/config.docker.yaml"]
     expose:
       - "5556"
+    ports:
+      - "127.0.0.1:5556:5556"
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml:ro
       - dex-data:/var/dex
@@ -29,6 +31,10 @@ services:
       OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /etc/oauth2-proxy/emails.txt
       OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
       OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL: "true"
+      OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+      OAUTH2_PROXY_LOGIN_URL: https://${APP_A_DOMAIN}/dex/auth
+      OAUTH2_PROXY_REDEEM_URL: http://dex:5556/dex/token
+      OAUTH2_PROXY_OIDC_JWKS_URL: http://dex:5556/dex/keys
     volumes:
       - ./emails.txt:/etc/oauth2-proxy/emails.txt:ro
     networks:
@@ -54,6 +60,10 @@ services:
       OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /etc/oauth2-proxy/emails.txt
       OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
       OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL: "true"
+      OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+      OAUTH2_PROXY_LOGIN_URL: https://${APP_B_DOMAIN}/dex/auth
+      OAUTH2_PROXY_REDEEM_URL: http://dex:5556/dex/token
+      OAUTH2_PROXY_OIDC_JWKS_URL: http://dex:5556/dex/keys
     volumes:
       - ./emails.txt:/etc/oauth2-proxy/emails.txt:ro
     networks:
