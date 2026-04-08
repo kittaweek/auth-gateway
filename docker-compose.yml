@@ -1,0 +1,70 @@
+services:
+  dex:
+    image: dexidp/dex:v2.39.1
+    container_name: auth-gateway-dex
+    command: ["dex", "serve", "/etc/dex/config.docker.yaml"]
+    expose:
+      - "5556"
+    volumes:
+      - ./dex-config.yaml:/etc/dex/config.docker.yaml:ro
+      - dex-data:/var/dex
+    networks:
+      - shared-proxy
+    restart: unless-stopped
+
+  oauth2-proxy-app-a:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    container_name: auth-gateway-proxy-app-a
+    ports:
+      - "127.0.0.1:4180:4180"
+    environment:
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_OIDC_ISSUER_URL: http://dex:5556/dex
+      OAUTH2_PROXY_CLIENT_ID: ${APP_A_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${APP_A_CLIENT_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${APP_A_COOKIE_SECRET}
+      OAUTH2_PROXY_REDIRECT_URL: https://${APP_A_DOMAIN}/oauth2/callback
+      OAUTH2_PROXY_UPSTREAMS: ${APP_A_UPSTREAM}
+      OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+      OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /etc/oauth2-proxy/emails.txt
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL: "true"
+    volumes:
+      - ./emails.txt:/etc/oauth2-proxy/emails.txt:ro
+    networks:
+      - shared-proxy
+    depends_on:
+      - dex
+    restart: unless-stopped
+
+  oauth2-proxy-app-b:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    container_name: auth-gateway-proxy-app-b
+    ports:
+      - "127.0.0.1:4181:4180"
+    environment:
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_OIDC_ISSUER_URL: http://dex:5556/dex
+      OAUTH2_PROXY_CLIENT_ID: ${APP_B_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${APP_B_CLIENT_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${APP_B_COOKIE_SECRET}
+      OAUTH2_PROXY_REDIRECT_URL: https://${APP_B_DOMAIN}/oauth2/callback
+      OAUTH2_PROXY_UPSTREAMS: ${APP_B_UPSTREAM}
+      OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+      OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /etc/oauth2-proxy/emails.txt
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "true"
+      OAUTH2_PROXY_INSECURE_OIDC_ALLOW_UNVERIFIED_EMAIL: "true"
+    volumes:
+      - ./emails.txt:/etc/oauth2-proxy/emails.txt:ro
+    networks:
+      - shared-proxy
+    depends_on:
+      - dex
+    restart: unless-stopped
+
+volumes:
+  dex-data:
+
+networks:
+  shared-proxy:
+    external: true
