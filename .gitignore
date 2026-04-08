@@ -1,0 +1,5 @@
+.env
+dex-config.yaml
+emails.txt
+*.db
+dex.db

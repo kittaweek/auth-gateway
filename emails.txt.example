@@ -1,0 +1,5 @@
+# List of email addresses allowed to log in.
+# Add one email per line. Lines starting with # are comments.
+# Only users whose email appears here will be granted access.
+
+user@example.com
