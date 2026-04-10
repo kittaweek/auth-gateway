@@ -7,6 +7,13 @@ RUN git clone --branch v2.45.1 --depth 1 https://github.com/dexidp/dex .
 
 RUN go mod download
 
+# Patch vulnerable deps while keeping everything else locked
+RUN go get \
+      github.com/go-jose/go-jose/v4@v4.1.4 \
+      github.com/russellhaering/goxmldsig@v1.6.0 \
+      google.golang.org/grpc@v1.79.3 && \
+    go mod tidy
+
 RUN CGO_ENABLED=0 GOFLAGS="-trimpath" go build -o /app/dex ./cmd/dex
 
 # runtime

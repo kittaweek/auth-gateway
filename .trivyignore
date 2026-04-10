@@ -1,0 +1,6 @@
+# False positives: Trivy cannot resolve the dex pseudo-version
+# (v0.0.0-20260303...) back to the actual release tag v2.45.1.
+# All three CVEs were fixed in versions well below v2.45.1.
+CVE-2020-26290
+CVE-2020-27847
+CVE-2022-39222
