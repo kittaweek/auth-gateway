@@ -17,7 +17,7 @@ RUN go get \
 RUN CGO_ENABLED=0 GOFLAGS="-trimpath" go build -o /app/dex ./cmd/dex
 
 # runtime
-FROM alpine:3.22
+FROM alpine:3.23
 
 RUN apk upgrade --no-cache && \
     apk add --no-cache \
