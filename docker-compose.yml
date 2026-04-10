@@ -13,6 +13,11 @@ services:
     networks:
       - shared-proxy
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
 
   oauth2-proxy-app-a:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
@@ -42,6 +47,11 @@ services:
     depends_on:
       - dex
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
 
   oauth2-proxy-app-b:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
@@ -71,6 +81,11 @@ services:
     depends_on:
       - dex
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
 
 volumes:
   dex-data:
