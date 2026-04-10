@@ -1,6 +1,6 @@
 services:
   dex:
-    image: dexidp/dex:v2.39.1
+    image: dexidp/dex:v2.45.1
     container_name: auth-gateway-dex
     command: ["dex", "serve", "/etc/dex/config.docker.yaml"]
     expose:
