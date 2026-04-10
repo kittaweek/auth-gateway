@@ -19,7 +19,8 @@ RUN CGO_ENABLED=0 GOFLAGS="-trimpath" go build -o /app/dex ./cmd/dex
 # runtime
 FROM alpine:3.22
 
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache && \
+    apk add --no-cache \
       --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
       'zlib=1.3.2-r0' && \
     adduser -D -u 1001 dex
