@@ -44,3 +44,29 @@ jobs:
 
       - name: Validate docker-compose config
         run: docker compose config --quiet
+
+  trivy:
+    name: Trivy Image Scan
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan dex image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: dexidp/dex:v2.39.1
+          format: table
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+
+      - name: Scan oauth2-proxy image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+          format: table
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
