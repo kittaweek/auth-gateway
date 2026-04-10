@@ -31,8 +31,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy example env
-        run: cp .env.example .env
+      - name: Generate dummy .env for validation
+        run: |
+          sed \
+            -e "s|<run: openssl rand -hex 16>|$(openssl rand -hex 16)|g" \
+            -e "s|^GOOGLE_CLIENT_ID=$|GOOGLE_CLIENT_ID=dummy|" \
+            -e "s|^GOOGLE_CLIENT_SECRET=$|GOOGLE_CLIENT_SECRET=dummy|" \
+            -e "s|^MS_CLIENT_ID=$|MS_CLIENT_ID=dummy|" \
+            -e "s|^MS_CLIENT_SECRET=$|MS_CLIENT_SECRET=dummy|" \
+            -e "s|^MS_TENANT_ID=$|MS_TENANT_ID=dummy|" \
+            .env.example > .env
 
       - name: Validate docker-compose config
         run: docker compose config --quiet
