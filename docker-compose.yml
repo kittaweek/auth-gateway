@@ -1,6 +1,9 @@
 services:
   dex:
-    image: dexidp/dex:v2.39.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: auth-gateway-dex:local
     container_name: auth-gateway-dex
     command: ["dex", "serve", "/etc/dex/config.docker.yaml"]
     expose:
@@ -13,9 +16,14 @@ services:
     networks:
       - shared-proxy
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
 
   oauth2-proxy-app-a:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.1
     container_name: auth-gateway-proxy-app-a
     ports:
       - "127.0.0.1:4180:4180"
@@ -42,9 +50,14 @@ services:
     depends_on:
       - dex
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
 
   oauth2-proxy-app-b:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.1
     container_name: auth-gateway-proxy-app-b
     ports:
       - "127.0.0.1:4181:4180"
@@ -71,6 +84,11 @@ services:
     depends_on:
       - dex
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
 
 volumes:
   dex-data:

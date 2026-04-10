@@ -1,0 +1,11 @@
+# False positives: Trivy cannot resolve the dex pseudo-version
+# (v0.0.0-20260303...) back to the actual release tag v2.45.1.
+# All three CVEs were fixed in versions well below v2.45.1.
+CVE-2020-26290
+CVE-2020-27847
+CVE-2022-39222
+
+# go-jose v3.0.4 and v4.1.3 in oauth2-proxy:v7.15.1 need v3.0.5/v4.1.4.
+# Waiting for upstream oauth2-proxy to update deps (no CRITICAL remaining).
+# Remove once Dependabot bumps oauth2-proxy past the fix.
+CVE-2026-34986

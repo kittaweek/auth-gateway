@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [master, dev]
+  # pull_request:
+  #   branches: [master]
+
+jobs:
+  lint:
+    name: Lint & Validate
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v3.0.1
+
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install detect-secrets
+        run: pip install detect-secrets==1.5.0
+
+      - name: Scan for secrets
+        run: detect-secrets-hook --baseline .secrets.baseline $(git ls-files)
+
+  validate-compose:
+    name: Validate Docker Compose
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate dummy .env for validation
+        run: |
+          sed \
+            -e "s|<run: openssl rand -hex 16>|$(openssl rand -hex 16)|g" \
+            -e "s|^GOOGLE_CLIENT_ID=$|GOOGLE_CLIENT_ID=dummy|" \
+            -e "s|^GOOGLE_CLIENT_SECRET=$|GOOGLE_CLIENT_SECRET=dummy|" \
+            -e "s|^MS_CLIENT_ID=$|MS_CLIENT_ID=dummy|" \
+            -e "s|^MS_CLIENT_SECRET=$|MS_CLIENT_SECRET=dummy|" \
+            -e "s|^MS_TENANT_ID=$|MS_TENANT_ID=dummy|" \
+            .env.example > .env
+
+      - name: Validate docker-compose config
+        run: docker compose config --quiet
+
+  trivy-scan:
+    name: Trivy Image Scan
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build patched dex image
+        run: docker build -t auth-gateway-dex:ci .
+
+      - name: Scan patched dex image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: auth-gateway-dex:ci
+          format: table
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          trivyignores: .trivyignore
+
+      - name: Scan oauth2-proxy image
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: quay.io/oauth2-proxy/oauth2-proxy:v7.15.1
+          format: table
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
