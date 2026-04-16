@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     image: auth-gateway-dex:local
     container_name: auth-gateway-dex
-    command: ["dex", "serve", "/etc/dex/config.docker.yaml"]
+    command: ["serve", "/etc/dex/config.docker.yaml"]
     expose:
       - "5556"
     ports:
