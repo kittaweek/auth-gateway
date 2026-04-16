@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     image: auth-gateway-dex:local
     container_name: auth-gateway-dex
-    command: ["dex", "serve", "/etc/dex/config.docker.yaml"]
+    command: ["serve", "/etc/dex/config.docker.yaml"]
     expose:
       - "5556"
     ports:
@@ -23,7 +23,7 @@ services:
           memory: 256M
 
   oauth2-proxy-app-a:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.1
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.2
     container_name: auth-gateway-proxy-app-a
     ports:
       - "127.0.0.1:4180:4180"
@@ -57,7 +57,7 @@ services:
           memory: 128M
 
   oauth2-proxy-app-b:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.1
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.2
     container_name: auth-gateway-proxy-app-b
     ports:
       - "127.0.0.1:4181:4180"
