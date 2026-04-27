@@ -76,7 +76,7 @@ jobs:
         run: docker build -t auth-gateway-dex:ci .
 
       - name: Scan patched dex image
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: auth-gateway-dex:ci
           format: table
@@ -86,7 +86,7 @@ jobs:
           trivyignores: .trivyignore
 
       - name: Scan oauth2-proxy image
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: quay.io/oauth2-proxy/oauth2-proxy:v7.15.2
           format: table
